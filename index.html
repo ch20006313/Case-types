@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>案件類型</title>
+  <style>
+    /* ================= 全域與銀河背景設定 ================= */
+    body {
+      margin: 0; padding: 0;
+      height: 100vh;
+      /* 銀河深色漸層背景 */
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #050608 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+      overflow: hidden;
+      cursor: none; /* 隱藏系統預設鼠標 */
+    }
+
+    /* 星星圖層 (利用 CSS 繪製隨機散佈的星星) */
+    .stars {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 160px 120px, rgba(255,255,255,0.9), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 240px 60px, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 300px 180px, #ffffff, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 400px 400px;
+      z-index: 0;
+      opacity: 0.6;
+      animation: twinkle 5s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.4; transform: scale(1); }
+      100% { opacity: 0.8; transform: scale(1.02); }
+    }
+
+    /* ================= 科技光環自訂鼠標 ================= */
+    /* 內部核心光點 */
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background-color: #00f2fe;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none; /* 確保不阻擋點擊 */
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe;
+    }
+
+    /* 外部延遲光環 */
+    .cursor-outline {
+      width: 30px; height: 30px;
+      border: 1.5px solid rgba(0, 242, 254, 0.6);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+    }
+
+    /* 當滑鼠移到可點擊區域時的光環變化 */
+    .cursor-outline.hover-effect {
+      width: 50px; height: 50px;
+      background-color: rgba(0, 242, 254, 0.1);
+      border-color: #00f2fe;
+    }
+
+    /* ================= 畫面中心定位點 ================= */
+    .center-anchor {
+      position: absolute; top: 50%; left: 50%;
+      width: 0; height: 0; z-index: 100;
+    }
+
+    /* 球體外部容器 */
+    .sphere-wrapper {
+      position: absolute;
+      width: 170px; height: 170px;
+      margin-left: -85px; margin-top: -85px; 
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.3, 1);
+      z-index: 1;
+    }
+
+    /* ================= 排版邏輯：預設微笑曲線 ================= */
+    body:not(.has-active) .wrapper-1 { transform: translate(-450px, -70px); }
+    body:not(.has-active) .wrapper-2 { transform: translate(-220px, 40px); }
+    body:not(.has-active) .wrapper-3 { transform: translate(0px, 90px); }
+    body:not(.has-active) .wrapper-4 { transform: translate(220px, 40px); }
+    body:not(.has-active) .wrapper-5 { transform: translate(450px, -70px); }
+
+    /* ================= 排版邏輯：邊緣散開狀態 ================= */
+    body.has-active .wrapper-1:not(.active) { transform: translate(-42vw, -38vh) scale(0.65); z-index: 10;} 
+    body.has-active .wrapper-2:not(.active) { transform: translate(42vw, -38vh) scale(0.65); z-index: 10;}  
+    body.has-active .wrapper-3:not(.active) { transform: translate(-42vw, 0vh) scale(0.65); z-index: 10;}   
+    body.has-active .wrapper-4:not(.active) { transform: translate(42vw, 0vh) scale(0.65); z-index: 10;}    
+    body.has-active .wrapper-5:not(.active) { transform: translate(0vw, 38vh) scale(0.65); z-index: 10;}    
+
+    /* ================= 排版邏輯：啟動置中狀態 ================= */
+    .sphere-wrapper.active {
+      transform: translate(0px, 0px) scale(2.6); 
+      z-index: 999;
+    }
+
+    /* ================= 呼吸微動畫 ================= */
+    .float-layer {
+      width: 100%; height: 100%;
+      animation: float 4s ease-in-out infinite;
+    }
+    .wrapper-1 .float-layer { animation-delay: 0s; }
+    .wrapper-2 .float-layer { animation-delay: -0.8s; }
+    .wrapper-3 .float-layer { animation-delay: -1.6s; }
+    .wrapper-4 .float-layer { animation-delay: -2.4s; }
+    .wrapper-5 .float-layer { animation-delay: -3.2s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ================= 球體本體與霓虹色彩設計 ================= */
+    .sphere {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      /* 因為隱藏了系統鼠標，這裡不用設 cursor: pointer */
+      display: flex; flex-direction: column; 
+      justify-content: center; align-items: center;
+      /* 銀河版的光影陰影配置 (霓虹邊緣發光) */
+      box-shadow: inset -15px -15px 30px rgba(0,0,0,0.8), 
+                  inset 10px 10px 25px rgba(255,255,255,0.4);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    /* 重新調配的星體色系，加入外圍發光 box-shadow */
+    .wrapper-1 .sphere { 
+      background: radial-gradient(circle at 35% 35%, #ffb88c, #de6262); 
+      box-shadow: 0 0 30px rgba(222, 98, 98, 0.4), inset -15px -15px 30px rgba(0,0,0,0.6), inset 10px 10px 20px rgba(255,255,255,0.4);
+    } 
+    .wrapper-2 .sphere { 
+      background: radial-gradient(circle at 35% 35%, #84fab0, #8fd3f4); 
+      box-shadow: 0 0 30px rgba(143, 211, 244, 0.4), inset -15px -15px 30px rgba(0,0,0,0.6), inset 10px 10px 20px rgba(255,255,255,0.4);
+    } 
+    .wrapper-3 .sphere { 
+      background: radial-gradient(circle at 35% 35%, #fccb90, #d57eeb); 
+      box-shadow: 0 0 30px rgba(213, 126, 235, 0.4), inset -15px -15px 30px rgba(0,0,0,0.6), inset 10px 10px 20px rgba(255,255,255,0.4);
+    } 
+    .wrapper-4 .sphere { 
+      background: radial-gradient(circle at 35% 35%, #a18cd1, #fbc2eb); 
+      box-shadow: 0 0 30px rgba(161, 140, 209, 0.4), inset -15px -15px 30px rgba(0,0,0,0.6), inset 10px 10px 20px rgba(255,255,255,0.4);
+    } 
+    .wrapper-5 .sphere { 
+      background: radial-gradient(circle at 35% 35%, #00f2fe, #4facfe); 
+      box-shadow: 0 0 30px rgba(79, 172, 254, 0.4), inset -15px -15px 30px rgba(0,0,0,0.6), inset 10px 10px 20px rgba(255,255,255,0.4);
+    } 
+
+    /* 移過去的微放大與霓虹光暈增強 */
+    .sphere-wrapper:not(.active) .sphere:hover {
+      transform: scale(1.08);
+      filter: brightness(1.2);
+    }
+    
+    .sphere-wrapper.active .sphere {
+      box-shadow: 0 0 60px rgba(255,255,255,0.2), inset -20px -20px 40px rgba(0,0,0,0.8), inset 15px 15px 35px rgba(255,255,255,0.5);
+    }
+
+    /* ================= 內部文字與選單系統 ================= */
+    .content-title {
+      color: #ffffff; 
+      /* 星空背景下，文字陰影改為發光感 */
+      text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.3); 
+      font-size: 24px; 
+      font-weight: 900;
+      text-align: center; line-height: 1.25;
+      padding: 0 10px;
+      transition: all 0.6s cubic-bezier(0.25, 1, 0.3, 1);
+      pointer-events: none; 
+    }
+
+    .sphere-wrapper.active .content-title {
+      transform: translateY(-40px) scale(0.45);
+    }
+
+    /* 詳細選單容器 */
+    .content-menu {
+      position: absolute;
+      top: 55%; left: 50%; transform: translate(-50%, -50%);
+      width: 75%;
+      display: flex; flex-direction: column; gap: 2.5px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease; 
+    }
+    .sphere-wrapper.active .content-menu {
+      opacity: 1; pointer-events: auto;
+      transition: opacity 0.5s ease 0.4s; 
+    }
+
+    /* 選單內部按鈕 (配合深色背景改為半透明磨砂黑) */
+    .menu-btn {
+      background: rgba(0, 0, 0, 0.4); 
+      border: 0.5px solid rgba(255, 255, 255, 0.3);
+      color: #fff; 
+      border-radius: 4px;
+      font-size: 6px; 
+      font-weight: bold;
+      padding: 3px 0;
+      text-align: center; 
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+      transform: scale(1.03);
+      border-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-outline" id="cursorOutline"></div>
+
+  <div class="stars"></div>
+
+  <div class="center-anchor" id="container">
+    
+    <div class="sphere-wrapper wrapper-1" data-hoverable="true">
+      <div class="float-layer">
+        <div class="sphere">
+          <div class="content-title">重劃<br>區段徵收</div>
+          <div class="content-menu">
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：公辦')">公辦</div>
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：自辦')">自辦</div>
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：區段徵收')">區段徵收</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sphere-wrapper wrapper-2" data-hoverable="true">
+      <div class="float-layer">
+        <div class="sphere">
+          <div class="content-title">都更權利變換</div>
+          <div class="content-menu">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sphere-wrapper wrapper-3" data-hoverable="true">
+      <div class="float-layer">
+        <div class="sphere">
+          <div class="content-title">資產評估</div>
+          <div class="content-menu">
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：一般案件')">一般案件</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sphere-wrapper wrapper-4" data-hoverable="true">
+      <div class="float-layer">
+        <div class="sphere">
+          <div class="content-title">用地取得</div>
+          <div class="content-menu">
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：徵收')">徵收</div>
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：協議價格評估')">協議價格評估</div>
+            <div class="menu-btn" data-hoverable="true" onclick="alert('進入：地上物查估')">地上物查估</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sphere-wrapper wrapper-5" data-hoverable="true">
+      <div class="float-layer">
+        <div class="sphere">
+          <div class="content-title">地上物查估</div>
+          <div class="content-menu">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ================= 鼠標跟隨邏輯 =================
+    const cursorDot = document.getElementById('cursorDot');
+    const cursorOutline = document.getElementById('cursorOutline');
+    
+    // 監聽滑鼠移動
+    window.addEventListener('mousemove', (e) => {
+      const posX = e.clientX;
+      const posY = e.clientY;
+
+      // 核心點無延遲跟隨
+      cursorDot.style.left = `${posX}px`;
+      cursorDot.style.top = `${posY}px`;
+
+      // 外部光環利用 Javascript 的 animate 創造微微的延遲跟隨感
+      cursorOutline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+      }, { duration: 300, fill: "forwards" });
+    });
+
+    // 處理鼠標移到「可互動元素」時的光環放大特效
+    const hoverables = document.querySelectorAll('[data-hoverable="true"]');
+    hoverables.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursorOutline.classList.add('hover-effect');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursorOutline.classList.remove('hover-effect');
+      });
+    });
+
+    // ================= 球體互動邏輯 =================
+    const wrappers = document.querySelectorAll('.sphere-wrapper');
+    const body = document.body;
+
+    wrappers.forEach(wrapper => {
+      wrapper.addEventListener('mouseenter', () => {
+        if (!wrapper.classList.contains('active')) {
+          wrappers.forEach(w => w.classList.remove('active'));
+          wrapper.classList.add('active');
+          body.classList.add('has-active'); 
+        }
+      });
+
+      const menuBtns = wrapper.querySelectorAll('.menu-btn');
+      menuBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      const isInsideSphere = e.target.closest('.sphere-wrapper');
+      if (!isInsideSphere) {
+        wrappers.forEach(w => w.classList.remove('active'));
+        body.classList.remove('has-active');
+      }
+    });
+  </script>
+</body>
+</html>
