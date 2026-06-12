@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>藝術風格案件導覽</title>
+<style>
+  /* --- 基礎質感設定 --- */
+  body {
+    background-color: #f6f4ec; /* 仿舊水彩紙的溫暖米白色 */
+    font-family: 'Klee One', 'Noto Serif TC', '標楷體', serif; /* 帶有手寫與人文氣息的字體 */
+    color: #4a555c; /* 柔和的深藍灰，取代生硬的純黑 */
+    margin: 0;
+    padding: 40px;
+    background-image: radial-gradient(#e2dcd0 1px, transparent 1px); /* 淡淡的紙張紋理感 */
+    background-size: 20px 20px;
+  }
+
+  /* --- 頂部導覽列：包含標題與右上角搜尋 --- */
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    border-bottom: 2px dashed #c8c0b4; /* 手繪風格的虛線 */
+    padding-bottom: 20px;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: 0;
+    color: #5c6b73;
+  }
+
+  /* --- 搜尋框美化 --- */
+  .search-box {
+    padding: 10px 18px;
+    font-size: 16px;
+    border: 2px solid #d4ccbe;
+    border-radius: 25px; /* 柔和的圓角 */
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #4a555c;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 250px;
+    font-family: inherit;
+  }
+
+  .search-box:focus {
+    border-color: #a3b1a6; /* 幾米風的柔和莫蘭迪綠 */
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(163, 177, 166, 0.3);
+  }
+
+  /* --- 案件列表設定 --- */
+  .item-list {
+    list-style-type: none;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .item {
+    margin-bottom: 15px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* --- 單個案件連結美化 --- */
+  .item a {
+    display: block;
+    padding: 20px 25px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #5c6b73;
+    font-size: 18px;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); /* 非常輕柔的陰影 */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 懸浮效果：水彩暈染般的微微上浮與邊框色彩變化 */
+  .item a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(163, 177, 166, 0.15);
+    color: #2b3940;
+  }
+
+  /* 隱藏元素時的動畫過渡類別 */
+  .item.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    position: absolute;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header-container">
+    <h1 class="header-title">公辦重劃-案件列表</h1>
+    <input type="text" id="searchInput" class="search-box" placeholder="輸入關鍵字尋找案件...">
+  </div>
+
+  <ul class="item-list" id="itemList">
+    <li class="item"><a href="#link1">115年高雄市第108期公辦市地重劃</a></li>
+    <li class="item"><a href="#link2">115年高雄市第110期公辦市地重劃</a></li>
+    <li class="item"><a href="#link3">115年高雄市第112期公辦市地重劃</a></li>
+    <li class="item"><a href="#link4">115年高雄市第***期公辦市地重劃</a></li>
+    <li class="item"><a href="#link5">114年高雄市第106期公辦市地重劃</a></li>
+    <li class="item"><a href="#link6">114年高雄市第***期公辦市地重劃</a></li>
+  </ul>
+
+  <script>
+    // 取得搜尋框與列表元素
+    const searchInput = document.getElementById('searchInput');
+    const items = document.querySelectorAll('.item');
+
+    // 監聽搜尋框的輸入事件 (即時過濾)
+    searchInput.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        // 如果包含關鍵字，則顯示；反之則加上隱藏的 CSS 類別
+        if (text.includes(keyword)) {
+          item.style.display = 'block'; // 確保佔用空間
+          // 使用 setTimeout 讓 display 先生效，再解除隱藏類別以觸發淡入動畫
+          setTimeout(() => item.classList.remove('hidden'), 10);
+        } else {
+          item.classList.add('hidden');
+          // 等待淡出動畫結束後，將元素收起不佔空間
+          setTimeout(() => {
+            if (item.classList.contains('hidden')) {
+              item.style.display = 'none';
+            }
+          }, 400); 
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
