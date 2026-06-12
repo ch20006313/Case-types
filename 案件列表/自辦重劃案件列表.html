@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自辦重劃：案件列表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/earlyaccess/setofont.css" rel="stylesheet">
+<style>
+  /* --- 基礎設定：森林陽光與微風底色 --- */
+  body {
+    /* 模仿陽光穿透樹葉的漸層綠色與溫暖鵝黃 */
+    background: linear-gradient(135deg, #dcede2 0%, #f5f7e6 50%, #e2eed6 100%);
+    /* 統一改用繁體中文的可愛手寫與圓體字，徹底解決缺字問題 */
+    font-family: 'Huninn', 'jf open 粉圓體', 'setofont', '微軟正黑體', sans-serif;
+    color: #3b4d3d; /* 深森林綠 */
+    margin: 0;
+    padding: 50px 20px;
+    min-height: 100vh;
+  }
+
+  /* --- 頂部區域：溫暖可愛的標題與搜尋 --- */
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 850px;
+    margin: 0 auto 50px auto;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 20px 40px;
+    border-radius: 50px; 
+    box-shadow: 0 4px 15px rgba(113, 142, 116, 0.15);
+    border: 2px solid #ffffff;
+  }
+
+  .header-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    color: #4a634d;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 0px #ffffff;
+  }
+
+  /* 搜尋框：橡果般的圓潤造型 */
+  .search-box {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: 2px solid #c0d1c2;
+    background-color: #ffffff;
+    border-radius: 30px;
+    color: #3b4d3d;
+    outline: none;
+    width: 250px;
+    font-family: inherit; /* 繼承可愛字體 */
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .search-box::placeholder {
+    color: #9ab39d;
+  }
+
+  .search-box:focus {
+    width: 300px;
+    border-color: #8fb896;
+    box-shadow: 0 0 0 4px rgba(143, 184, 150, 0.2);
+  }
+
+  /* --- 案件列表：可愛的卡片排版 --- */
+  .item-list {
+    list-style-type: none;
+    padding: 0;
+    max-width: 850px;
+    margin: 0 auto;
+    display: grid;
+    gap: 20px;
+  }
+
+  .item {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  /* --- 案件連結與互動 (彷彿漂浮在雲朵上) --- */
+  .item a {
+    display: block;
+    padding: 25px 35px;
+    background-color: #ffffff;
+    text-decoration: none;
+    color: #4a634d;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(113, 142, 116, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 裝飾性的小葉子標籤 */
+  .item a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background-color: #8fb896; 
+    border-radius: 20px 0 0 20px;
+    transition: width 0.3s ease;
+  }
+
+  /* 懸浮觸發：微風吹拂的浮動感與顏色變化 */
+  .item a:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 15px 25px rgba(113, 142, 116, 0.15);
+    border-color: #e2eed6;
+    color: #2b3a2d;
+  }
+
+  .item a:hover::before {
+    width: 15px; 
+    background-color: #f2ba70;
+  }
+
+  /* 隱藏元素時的動畫過渡 */
+  .item.hidden {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+    pointer-events: none;
+    position: absolute;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header-container">
+    <h1 class="header-title">自辦重劃：案件列表</h1>
+    <input type="text" id="searchInput" class="search-box" placeholder="尋找記憶中的案件...">
+  </div>
+
+  <ul class="item-list" id="itemList">
+    <li class="item"><a href="#link1">高雄市第87期湖內區普濟自辦市地重劃區</a></li>
+    <li class="item"><a href="#link2">高雄市第83期阿蓮區青蓮自辦市地重劃區</a></li>
+    <li class="item"><a href="#link3">高雄市第85期仁武區草潭及永和段自辦市地重劃區</a></li>
+    <li class="item"><a href="#link4">高雄市第66期左營區左東段985地號等自辦市地重劃區</a></li>
+    <li class="item"><a href="#link5">110年高雄市第81期公辦重劃</a></li>
+  </ul>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const items = document.querySelectorAll('.item');
+
+    searchInput.addEventListener('input', function() {
+      const keyword = this.value.toLowerCase().trim();
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(keyword)) {
+          item.style.display = 'block'; 
+          setTimeout(() => item.classList.remove('hidden'), 10);
+        } else {
+          item.classList.add('hidden');
+          setTimeout(() => {
+            if (item.classList.contains('hidden')) {
+              item.style.display = 'none';
+            }
+          }, 400); 
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
